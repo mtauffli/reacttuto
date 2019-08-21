@@ -15,53 +15,34 @@ class Board extends React.Component {
   renderSquare(i) {
     return (
       <Square
+        key={i}
         value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)}
+        onClick={() => {this.props.onClick(i)}}
       />
     );
   }
 
-  // makeBoard() {
-  //   let buildBoard = '<div>';
-  //   const boardRow = '<div className="board-row">';
-
-
-  //   for (var i = 0; i < 3; i++) {
-  //     buildBoard = buildBoard + boardRow;
-  //     for (var j = 0; j < 3; j++) {
-  //       buildBoard = buildBoard + '{this.renderSquare(' + j + ')}';
-  //     }
-  //     buildBoard = buildBoard + '</div>';
-  //     j = 0;
-  //   }
-  //   buildBoard = buildBoard + '</div>';
-  // }
-
-  // render() {
-  //   let board = this.makeBoard();  
-  //   return (
-  //       board
-  //     );
-  // }
-
   render() {
+
+    const createBoard = renderSquare => {
+      const board = [];
+
+      var k = 0;
+      for (var i = 0; i < 3; i++) {
+        const squares = [];
+        for (var j = 0; j < 3; j++) {
+          console.log(k);
+          squares.push(renderSquare(k));
+          k++;
+        }
+        board.push(<div key={i} className="board-row">{squares}</div>)
+      }
+    return board;
+    }
+
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {createBoard(this.renderSquare.bind(this))}
       </div>
     );
   }
@@ -113,14 +94,13 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
     const matchNul = checkMatchNul(this.state.stepNumber);
 
-    // const moveBold = <b>1</b>;
     const moves = history.map((step, move) => {
       const desc = move ?
-        'Go to move #' + move.toString().bold() : // ICI AJOUTER LEMPLACEMENT DU CLICK (colonne, ligne) ET le gras :(
-        'Go to game start';        
+        `Go to move #` :
+        `Go to game start`;        
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button onClick={() => this.jumpTo(move)}>{desc}{move !== 0 && <b>{move}</b>}</button>
         </li>
       );
     });
@@ -156,10 +136,6 @@ class Game extends React.Component {
   }
 }
 
-// ========================================
-
-ReactDOM.render(<Game />, document.getElementById("root"));
-
 function checkMatchNul(stepNumber) {
   if (stepNumber > 8)
     return 1;
@@ -187,3 +163,5 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
+ReactDOM.render(<Game />, document.getElementById("root"));
